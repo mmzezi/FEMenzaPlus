@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="appetizing1">#FFC96F</color>
+    <color name="appetizing2">#FFA62F</color>
+    <color name="appetizing3">#FFCB84</color>
+    <color name="appetizing4">#ACD793</color>
+    <color name="appetizing4_1">#ACD793</color>
+    <color name="black">#FF000000</color>
+    <color name="white">#FFFFFFFF</color>
+    <color name="textColorLight">#FFFFFF</color>
+    <color name="textColorDark">#FF000000</color>
+</resources>

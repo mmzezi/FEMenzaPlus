@@ -1,0 +1,22 @@
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:id="@+id/navigation_monday"
+        android:icon="@drawable/ic_ponedeljek"
+        android:title="@string/navigation_monday"/>
+    <item
+        android:id="@+id/navigation_tuesday"
+        android:icon="@drawable/ic_torek"
+        android:title="@string/navigation_tuesday"/>
+    <item
+        android:id="@+id/navigation_wednesday"
+        android:icon="@drawable/ic_sreda"
+        android:title="@string/navigation_wednesday"/>
+    <item
+        android:id="@+id/navigation_thursday"
+        android:icon="@drawable/ic_cetrtek"
+        android:title="@string/navigation_thursday"/>
+    <item
+        android:id="@+id/navigation_friday"
+        android:icon="@drawable/ic_petek"
+        android:title="@string/navigation_friday"/>
+</menu>

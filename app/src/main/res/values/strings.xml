@@ -1,0 +1,11 @@
+<resources>
+    <string name="app_name">FEmenza+</string>
+    <string name="navigation_monday">Ponedeljek</string>
+    <string name="navigation_tuesday">Torek</string>
+    <string name="navigation_wednesday">Sreda</string>
+    <string name="navigation_thursday">Četrtek</string>
+    <string name="navigation_friday">Petek</string>
+    <string name="close">close</string>
+    <string name="menu_title">%1$s (%2$s)</string>
+    <string name="loading">⠀Cooking...</string>
+</resources>

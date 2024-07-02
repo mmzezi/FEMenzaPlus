@@ -60,7 +60,7 @@ class MenuAdapter(private val context: Context, private val menuList: List<MenuI
     private fun getIconResId(type: String): Int {
         return when {
             type.contains("perutnina", ignoreCase = true) -> R.drawable.perutnina
-            type.contains("mleto meso", ignoreCase = true) -> R.drawable.meat_grinder_svgrepo_com
+            type.contains("mleto meso", ignoreCase = true) -> R.drawable.meat_grinder_new
             type.contains("rdeče meso", ignoreCase = true) -> R.drawable.rdece_meso
             type.contains("vege", ignoreCase = true) -> R.drawable.vege
             type.contains("testenine", ignoreCase = true) -> R.drawable.testenine

@@ -1,15 +1,9 @@
 package si.uni_lj.fe.femensus
 
-import android.os.Build
 import android.os.Bundle
-import android.view.View
-import android.view.WindowInsets
-import android.view.WindowInsetsController
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
-import androidx.fragment.app.Fragment
 import com.google.android.material.bottomnavigation.BottomNavigationView
-
 
 class MainActivity : AppCompatActivity() {
     private var today: WeekDay = WeekDay.Monday
@@ -18,74 +12,70 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-
-        // Find the toolbar in the layout
         val toolbar: Toolbar = findViewById(R.id.toolbar)
-        // Set the toolbar as the app bar for the activity
         setSupportActionBar(toolbar)
 
-        // Get current day, Monday if weekend
         today = WeekDay.getToday()
-
-        // Set the title programmatically after setting the day of the week
         supportActionBar?.title = getTitleForToolbar()
 
         val bottomNavigationView = findViewById<BottomNavigationView>(R.id.bottom_navigation)
         bottomNavigationView.setOnNavigationItemSelectedListener { item ->
-            when (item.itemId) {
-                R.id.navigation_monday -> {
-                    today = WeekDay.Monday
-                }
-                R.id.navigation_tuesday -> {
-                    today = WeekDay.Tuesday
-                }
-                R.id.navigation_wednesday -> {
-                    today = WeekDay.Wednesday
-                }
-                R.id.navigation_thursday -> {
-                    today = WeekDay.Thursday
-                }
-                R.id.navigation_friday -> {
-                    today = WeekDay.Friday
-                }
-                else -> {
-                    today = WeekDay.Monday
-                }
+            val newDay = when (item.itemId) {
+                R.id.navigation_monday -> WeekDay.Monday
+                R.id.navigation_tuesday -> WeekDay.Tuesday
+                R.id.navigation_wednesday -> WeekDay.Wednesday
+                R.id.navigation_thursday -> WeekDay.Thursday
+                R.id.navigation_friday -> WeekDay.Friday
+                else -> WeekDay.Monday
             }
-            val selectedFragment = DayFragment(today);
-            supportFragmentManager.beginTransaction().replace(R.id.fragment_container, selectedFragment).commit()
-            supportActionBar?.title = getTitleForToolbar()
+            
+            if (newDay != today || supportFragmentManager.findFragmentById(R.id.fragment_container) == null) {
+                today = newDay
+                replaceFragment(today)
+                supportActionBar?.title = getTitleForToolbar()
+            }
             true
         }
 
-        // Set default fragment
         if (savedInstanceState == null) {
-            bottomNavigationView.selectedItemId = when (today) {
+            val selectedItemId = when (today) {
                 WeekDay.Monday -> R.id.navigation_monday
                 WeekDay.Tuesday -> R.id.navigation_tuesday
                 WeekDay.Wednesday -> R.id.navigation_wednesday
                 WeekDay.Thursday -> R.id.navigation_thursday
                 WeekDay.Friday -> R.id.navigation_friday
             }
+            bottomNavigationView.selectedItemId = selectedItemId
         }
     }
 
-    private fun getTitleForToolbar(): String {
-        return menuTitle!!.replace(".", "")
-            .replace(" od ", ": ")
-            .replace(" do ", " - ")
-            .replace(Regex("([a-z])ja$"), "$1j")
-            .let {
-                val words = it.split(" ")
-                if (words.isNotEmpty()) {
-                    val lastWord = words.last().replaceFirstChar { char -> char.uppercaseChar() }
-                    words.dropLast(1).joinToString(" ") + " " + lastWord
-                } else {
-                    it
-                }
-            } ?: "Not loaded"
+    private fun replaceFragment(day: WeekDay) {
+        val fragment = DayFragment.newInstance(day)
+        supportFragmentManager.beginTransaction()
+            .replace(R.id.fragment_container, fragment)
+            .commit()
     }
 
+    private fun getTitleForToolbar(): String {
+        val title = menuTitle ?: return "Ni naloženo"
+        
+        var result = title.trim().removeSuffix(".")
+            .replace("Tedenski ", "", ignoreCase = true)
+            .replace(" od ", ": ", ignoreCase = true)
+            .replace(" do ", " – ", ignoreCase = true)
 
+        val monthMap = mapOf(
+            "januarja" to "januar", "februarja" to "februar", "marca" to "marec",
+            "aprila" to "april", "maja" to "maj", "junija" to "junij",
+            "julija" to "julij", "avgusta" to "avgust", "septembra" to "september",
+            "oktobra" to "oktober", "novembra" to "november", "decembra" to "december"
+        )
+
+        monthMap.forEach { (gen, nom) ->
+            result = result.replace(gen, nom, ignoreCase = true)
+        }
+
+        return result.replace(Regex("\\s+"), " ")
+            .replaceFirstChar { it.uppercase() }
+    }
 }
-

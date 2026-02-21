@@ -2,7 +2,7 @@ package si.uni_lj.fe.femensus
 
 import java.util.Calendar
 
-data class Menu(var name: String, var type: String, var details: List<String>)
+data class Menu(val name: String, val type: String, val details: List<String>)
 
 enum class WeekDay(val value: Int) {
     Monday(0),
@@ -24,8 +24,7 @@ enum class WeekDay(val value: Int) {
     companion object {
         fun getToday(): WeekDay {
             val calendar = Calendar.getInstance()
-            val dayOfWeek = calendar.get(Calendar.DAY_OF_WEEK)
-            val dayOfWeekEnum = when (dayOfWeek) {
+            return when (calendar.get(Calendar.DAY_OF_WEEK)) {
                 Calendar.MONDAY -> Monday
                 Calendar.TUESDAY -> Tuesday
                 Calendar.WEDNESDAY -> Wednesday
@@ -33,20 +32,22 @@ enum class WeekDay(val value: Int) {
                 Calendar.FRIDAY -> Friday
                 else -> Monday
             }
-            return dayOfWeekEnum
         }
     }
 }
 
-data class Week(var days: List<Pair<String, List<Menu>>>) {
-    private fun getDay(day: WeekDay): Pair<String, List<Menu>>{
-        return days[day.value];
-    }
-
+data class Week(val days: List<Pair<String, List<Menu>>>) {
     fun getDayMenuItems(day: WeekDay): List<MenuItem> {
-        val menuList: List<MenuItem> = parsedMenu!!.getDay(day).second.map {
-            MenuItem(R.drawable.icon_final_1_, it.name.capitalize(), it.type, it.details.joinToString("\n"))
+        val dayIndex = day.value
+        if (dayIndex >= days.size) return emptyList()
+        
+        return days[dayIndex].second.map {
+            MenuItem(
+                R.drawable.icon_final_1_,
+                it.name.replaceFirstChar { char -> char.uppercase() },
+                it.type,
+                it.details.joinToString("\n")
+            )
         }
-        return menuList
     }
 }

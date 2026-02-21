@@ -8,10 +8,31 @@ import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 
-class DayFragment(var day: WeekDay) : Fragment() {
+class DayFragment : Fragment() {
 
     private lateinit var menuAdapter: MenuAdapter
     private lateinit var recyclerView: RecyclerView
+    private var day: WeekDay = WeekDay.Monday
+
+    companion object {
+        private const val ARG_DAY = "arg_day"
+
+        fun newInstance(day: WeekDay): DayFragment {
+            val fragment = DayFragment()
+            val args = Bundle()
+            args.putInt(ARG_DAY, day.value)
+            fragment.arguments = args
+            return fragment
+        }
+    }
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        arguments?.let {
+            val dayValue = it.getInt(ARG_DAY)
+            day = WeekDay.values().firstOrNull { d -> d.value == dayValue } ?: WeekDay.Monday
+        }
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -21,7 +42,7 @@ class DayFragment(var day: WeekDay) : Fragment() {
 
         recyclerView = view.findViewById(R.id.recycler_view)
 
-        val menuList: List<MenuItem> = parsedMenu!!.getDayMenuItems(day)
+        val menuList: List<MenuItem> = parsedMenu?.getDayMenuItems(day) ?: emptyList()
 
         menuAdapter = MenuAdapter(requireContext(), menuList)
 

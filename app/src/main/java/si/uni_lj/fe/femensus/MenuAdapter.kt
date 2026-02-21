@@ -2,6 +2,8 @@ package si.uni_lj.fe.femensus
 
 import android.app.Dialog
 import android.content.Context
+import android.graphics.Color
+import android.graphics.drawable.ColorDrawable
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -21,7 +23,7 @@ class MenuAdapter(private val context: Context, private val menuList: List<MenuI
         holder.meniTitle.text = menuItem.title
         try {
             holder.meniContent.text = "● " + menuItem.details.split("\n")[1] + "\n" + "● " + menuItem.details.split("\n")[2]
-        } catch (e: IndexOutOfBoundsException) {
+        } catch (e: Exception) {
             holder.meniContent.text = menuItem.details
         }
         holder.meniIcon.setImageResource(getIconResId(menuItem.type))
@@ -38,6 +40,9 @@ class MenuAdapter(private val context: Context, private val menuList: List<MenuI
     private fun showMenuDetailsDialog(menuItem: MenuItem) {
         val dialog = Dialog(context)
         dialog.setContentView(R.layout.dialog_menu_details)
+        
+        // Set the dialog's window background to transparent to show the rounded corners correctly
+        dialog.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
 
         val meniIcon: ImageView = dialog.findViewById(R.id.meni_icon)
         val meniTitle: TextView = dialog.findViewById(R.id.meni_title)
@@ -47,7 +52,7 @@ class MenuAdapter(private val context: Context, private val menuList: List<MenuI
 
         meniIcon.setImageResource(getIconResId(menuItem.type))
         meniTitle.text = menuItem.title
-        meniType.text = menuItem.type.capitalize()
+        meniType.text = menuItem.type.replaceFirstChar { it.uppercase() }
         meniContent.text = menuItem.details
 
         closeButton.setOnClickListener {

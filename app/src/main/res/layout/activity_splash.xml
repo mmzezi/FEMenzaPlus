@@ -33,7 +33,7 @@
         android:layout_marginTop="200dp"
         android:layout_marginBottom="20dp"
         android:contentDescription="@string/app_name"
-        android:src="@drawable/icon_final_1_" />
+        android:src="@drawable/icon_final" />
 
     <ImageView
         android:id="@+id/loading_pot_id"

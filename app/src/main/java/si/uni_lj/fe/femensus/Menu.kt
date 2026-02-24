@@ -41,9 +41,22 @@ data class Week(val days: List<Pair<String, List<Menu>>>) {
         val dayIndex = day.value
         if (dayIndex >= days.size) return emptyList()
         
-        return days[dayIndex].second.map {
+        val dayData = days[dayIndex]
+        if (dayData.second.isEmpty()) {
+            // Return a special "Missing Menu" item
+            return listOf(
+                MenuItem(
+                    R.drawable.icon_final,
+                    "Meni ni na voljo",
+                    "Praznik / Ni podatkov",
+                    "Za ta dan jedilnik trenutno ni na voljo."
+                )
+            )
+        }
+        
+        return dayData.second.map {
             MenuItem(
-                R.drawable.icon_final_1_,
+                R.drawable.icon_final,
                 it.name.replaceFirstChar { char -> char.uppercase() },
                 it.type,
                 it.details.joinToString("\n")

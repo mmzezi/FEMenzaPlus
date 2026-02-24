@@ -22,21 +22,35 @@ class MenuAdapter(private val context: Context, private val menuList: List<MenuI
         val menuItem = menuList[position]
         holder.meniTitle.text = menuItem.title
         
-        val lines = menuItem.details.split("\n").filter { it.isNotBlank() }
+        val lines = menuItem.details.split("\n").filter { it.isNotBlank() }.toMutableList()
+        val type = menuItem.type.lowercase()
         
-        val contentText = when {
-            menuItem.type.contains("enolončnica", ignoreCase = true) -> {
-                lines.take(2).joinToString("\n") { "● $it" }
+        val filteredLines = when {
+            // Case 1: Stew (Enolončnica) - Show everything
+            type.contains("enolončnica") -> {
+                lines
             }
-            lines.size >= 3 -> {
-                "● ${lines[1]}\n● ${lines[2]}"
+            // Case 2: Main Dish Salad (Solata) - Skip soup if present, keep the rest
+            type.contains("solata") -> {
+                if (lines.isNotEmpty() && lines[0].contains("juha", ignoreCase = true)) {
+                    lines.drop(1)
+                } else {
+                    lines
+                }
             }
+            // Case 3: Standard Menus - Skip starting soup and ending side salad
             else -> {
-                lines.joinToString("\n") { "● $it" }
+                if (lines.isNotEmpty() && lines[0].contains("juha", ignoreCase = true)) {
+                    lines.removeAt(0)
+                }
+                if (lines.isNotEmpty() && lines.last().contains("solata", ignoreCase = true)) {
+                    lines.removeAt(lines.size - 1)
+                }
+                lines
             }
         }
         
-        holder.meniContent.text = contentText
+        holder.meniContent.text = filteredLines.joinToString("\n") { "● $it" }
         holder.meniIcon.setImageResource(getIconResId(menuItem.type))
 
         holder.itemView.setOnClickListener {
@@ -52,7 +66,6 @@ class MenuAdapter(private val context: Context, private val menuList: List<MenuI
         val dialog = Dialog(context)
         dialog.setContentView(R.layout.dialog_menu_details)
         
-        // Set the dialog's window background to transparent to show the rounded corners correctly
         dialog.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
 
         val meniIcon: ImageView = dialog.findViewById(R.id.meni_icon)
@@ -83,7 +96,7 @@ class MenuAdapter(private val context: Context, private val menuList: List<MenuI
             type.contains("solata", ignoreCase = true) -> R.drawable.solata
             type.contains("enolončnica", ignoreCase = true) -> R.drawable.enoloncnica
             type.contains("riba", ignoreCase = true) || type.contains("ribe", ignoreCase = true) -> R.drawable.riba
-            else -> R.drawable.icon_final_1_ // default icon
+            else -> R.drawable.icon_final // default icon
         }
     }
 

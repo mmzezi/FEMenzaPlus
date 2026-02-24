@@ -3,14 +3,15 @@ package si.uni_lj.fe.femensus
 import android.app.Dialog
 import android.content.Context
 import android.graphics.Color
-import android.graphics.drawable.ColorDrawable
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
+import androidx.core.graphics.drawable.toDrawable
 
+@Suppress("SpellCheckingInspection")
 class MenuAdapter(private val context: Context, private val menuList: List<MenuItem>) : RecyclerView.Adapter<MenuAdapter.ViewHolder>() {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
@@ -24,6 +25,8 @@ class MenuAdapter(private val context: Context, private val menuList: List<MenuI
         
         val lines = menuItem.details.split("\n").filter { it.isNotBlank() }.toMutableList()
         val type = menuItem.type.lowercase()
+
+        fun isSoup(text: String): Boolean = text.contains("juha", ignoreCase = true) || text.contains("mineštra", ignoreCase = true)
         
         val filteredLines = when {
             // Case 1: Stew (Enolončnica) - Show everything
@@ -32,7 +35,7 @@ class MenuAdapter(private val context: Context, private val menuList: List<MenuI
             }
             // Case 2: Main Dish Salad (Solata) - Skip soup if present, keep the rest
             type.contains("solata") -> {
-                if (lines.isNotEmpty() && lines[0].contains("juha", ignoreCase = true)) {
+                if (lines.isNotEmpty() && isSoup(lines[0])) {
                     lines.drop(1)
                 } else {
                     lines
@@ -40,7 +43,7 @@ class MenuAdapter(private val context: Context, private val menuList: List<MenuI
             }
             // Case 3: Standard Menus - Skip starting soup and ending side salad
             else -> {
-                if (lines.isNotEmpty() && lines[0].contains("juha", ignoreCase = true)) {
+                if (lines.isNotEmpty() && isSoup(lines[0])) {
                     lines.removeAt(0)
                 }
                 if (lines.isNotEmpty() && lines.last().contains("solata", ignoreCase = true)) {
@@ -66,7 +69,7 @@ class MenuAdapter(private val context: Context, private val menuList: List<MenuI
         val dialog = Dialog(context)
         dialog.setContentView(R.layout.dialog_menu_details)
         
-        dialog.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
+        dialog.window?.setBackgroundDrawable(Color.TRANSPARENT.toDrawable())
 
         val meniIcon: ImageView = dialog.findViewById(R.id.meni_icon)
         val meniTitle: TextView = dialog.findViewById(R.id.meni_title)

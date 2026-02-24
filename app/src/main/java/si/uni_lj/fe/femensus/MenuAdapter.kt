@@ -21,11 +21,22 @@ class MenuAdapter(private val context: Context, private val menuList: List<MenuI
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         val menuItem = menuList[position]
         holder.meniTitle.text = menuItem.title
-        try {
-            holder.meniContent.text = "● " + menuItem.details.split("\n")[1] + "\n" + "● " + menuItem.details.split("\n")[2]
-        } catch (e: Exception) {
-            holder.meniContent.text = menuItem.details
+        
+        val lines = menuItem.details.split("\n").filter { it.isNotBlank() }
+        
+        val contentText = when {
+            menuItem.type.contains("enolončnica", ignoreCase = true) -> {
+                lines.take(2).joinToString("\n") { "● $it" }
+            }
+            lines.size >= 3 -> {
+                "● ${lines[1]}\n● ${lines[2]}"
+            }
+            else -> {
+                lines.joinToString("\n") { "● $it" }
+            }
         }
+        
+        holder.meniContent.text = contentText
         holder.meniIcon.setImageResource(getIconResId(menuItem.type))
 
         holder.itemView.setOnClickListener {

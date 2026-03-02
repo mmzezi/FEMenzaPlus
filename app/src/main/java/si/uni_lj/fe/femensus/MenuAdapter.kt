@@ -14,6 +14,9 @@ import androidx.core.graphics.drawable.toDrawable
 @Suppress("SpellCheckingInspection")
 class MenuAdapter(private val context: Context, private val menuList: List<MenuItem>) : RecyclerView.Adapter<MenuAdapter.ViewHolder>() {
 
+    private val soupKeywords = listOf("juha", "mineštra", "prežganka")
+    private val saladKeywords = listOf("solata")
+
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         val view = LayoutInflater.from(parent.context).inflate(R.layout.item_menu, parent, false)
         return ViewHolder(view)
@@ -26,30 +29,32 @@ class MenuAdapter(private val context: Context, private val menuList: List<MenuI
         val lines = menuItem.details.split("\n").filter { it.isNotBlank() }.toMutableList()
         val type = menuItem.type.lowercase()
 
-        fun isSoup(text: String): Boolean = text.contains("juha", ignoreCase = true) || text.contains("mineštra", ignoreCase = true)
-        
+        fun containsAny(text: String, keywords: List<String>): Boolean = 
+            keywords.any { text.contains(it, ignoreCase = true) }
+
         val filteredLines = when {
-            // Case 1: Stew (Enolončnica) - Show everything
-            type.contains("enolončnica") -> {
-                lines
-            }
-            // Case 2: Main Dish Salad (Solata) - Skip soup if present, keep the rest
+            // Case 1: Stew (Enolončnica) - Show everything (stews ARE the soup)
+            type.contains("enolončnica") -> lines
+            
+            // Case 2: Main Dish Salad (Solata) - Skip starting soup, keep the rest
             type.contains("solata") -> {
-                if (lines.isNotEmpty() && isSoup(lines[0])) {
+                if (lines.isNotEmpty() && containsAny(lines[0], soupKeywords)) {
                     lines.drop(1)
                 } else {
                     lines
                 }
             }
+            
             // Case 3: Standard Menus - Skip starting soup and ending side salad
             else -> {
-                if (lines.isNotEmpty() && isSoup(lines[0])) {
-                    lines.removeAt(0)
+                val result = lines.toMutableList()
+                if (result.isNotEmpty() && containsAny(result[0], soupKeywords)) {
+                    result.removeAt(0)
                 }
-                if (lines.isNotEmpty() && lines.last().contains("solata", ignoreCase = true)) {
-                    lines.removeAt(lines.size - 1)
+                if (result.isNotEmpty() && containsAny(result.last(), saladKeywords)) {
+                    result.removeAt(result.size - 1)
                 }
-                lines
+                result
             }
         }
         
